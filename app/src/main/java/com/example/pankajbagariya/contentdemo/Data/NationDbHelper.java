@@ -1,9 +1,9 @@
-package com.example.pankajbagariya.contentdemo;
+package com.example.pankajbagariya.contentdemo.Data;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import com.example.pankajbagariya.contentdemo.NationContract.NationEntry;
+import com.example.pankajbagariya.contentdemo.Data.NationContract.NationEntry;
 
 public class NationDbHelper extends SQLiteOpenHelper {
 

@@ -3,13 +3,15 @@ package com.example.pankajbagariya.contentdemo;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import com.example.pankajbagariya.contentdemo.NationContract.NationEntry;
+import com.example.pankajbagariya.contentdemo.Data.NationContract.NationEntry;
+import com.example.pankajbagariya.contentdemo.Data.NationDbHelper;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -18,9 +20,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private SQLiteDatabase database;
-    private NationDbHelper databaseHelper;
-
+   // private SQLiteDatabase database;
+    //private NationDbHelper databaseHelper;
+//removed instance of sqlite database becoz we need it no more
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,8 +47,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnQueryRowById.setOnClickListener(this);
         btnDisplayAll.setOnClickListener(this);
 
-        databaseHelper = new NationDbHelper(this);
-        database = databaseHelper.getWritableDatabase();		// READ/WRITE
+     //   databaseHelper = new NationDbHelper(this);
+     //   database = databaseHelper.getWritableDatabase();		// READ/WRITE
     }
 
     @Override
@@ -85,8 +87,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         contentValues.put(NationEntry.COLUMN_COUNTRY,countryName);
         contentValues.put(NationEntry.COLUMN_CONTINENT,continentName);
 
-        long rowId = database.insert(NationEntry.TABLE_NAME, null, contentValues);
-        Log.i(TAG,"Item inserted in Table with rowId:"+ rowId);
+        Uri uri = NationEntry.CONTENT_URI;
+        Uri uriRowInserted = getContentResolver().insert(uri,contentValues);
+
+       // long rowId = database.insert(NationEntry.TABLE_NAME, null, contentValues);
+        Log.i(TAG,"Item inserted in Table with rowId:"+ uriRowInserted);
     }
 
     private void update() {
@@ -100,8 +105,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ContentValues contentValues = new ContentValues();
     contentValues.put(NationEntry.COLUMN_CONTINENT,newContinent);
 
-        int rowsUpdated = database.update(NationEntry.TABLE_NAME, contentValues, selection, selectionArgs);
+        // int rowsUpdated = database.update(NationEntry.TABLE_NAME, contentValues, selection, selectionArgs);
+       // Log.i(TAG, "Number of rows updated: " + rowsUpdated);
+
+         Uri uri = NationEntry.CONTENT_URI;    Log.i(TAG,""+uri);
+        int rowsUpdated =getContentResolver().update(uri,contentValues,selection,selectionArgs);
         Log.i(TAG, "Number of rows updated: " + rowsUpdated);
+
     }
 
     private void delete() {
@@ -111,8 +121,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String selection = NationEntry.COLUMN_COUNTRY + " = ? ";
         String[] selectionArgs = { countryName };		// WHERE country = "Japan"
 
-        int rowsDeleted = database.delete(NationEntry.TABLE_NAME, selection, selectionArgs);
+       // int rowsDeleted = database.delete(NationEntry.TABLE_NAME, selection, selectionArgs);
+        //Log.i(TAG, "Number of rows deleted: " + rowsDeleted);
+
+        Uri uri = Uri.withAppendedPath(NationEntry.CONTENT_URI,countryName);  Log.i(TAG,""+uri);
+       int  rowsDeleted=  getContentResolver().delete(uri,selection,selectionArgs);
         Log.i(TAG, "Number of rows deleted: " + rowsDeleted);
+
     }
 
     private void queryRowById() {
@@ -131,24 +146,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         String sortOrder = null;	// Ascending or Descending ...
 
-        Cursor cursor = database.query(NationEntry.TABLE_NAME,		// The table name
-                projection,              // The columns to return
-                selection,               // Selection: WHERE clause OR the condition
-                selectionArgs,           // Selection Arguments for the WHERE clause
-                null,             // don't group the rows
-                null,              // don't filter by row groups
-                sortOrder);			     // The sort order
+        Uri uri = Uri.withAppendedPath(NationEntry.CONTENT_URI,rowId);
+        Cursor cursor  = getContentResolver().query(uri,projection,selection,selectionArgs,sortOrder);
+        //Now data is access using ContentProvider using method getContentResolver
+
+       // Cursor cursor = database.query(NationEntry.TABLE_NAME,		// The table name
+        //        projection,              // The columns to return
+         //       selection,               // Selection: WHERE clause OR the condition
+          //      selectionArgs,           // Selection Arguments for the WHERE clause
+        //        null,             // don't group the rows
+         //       null,              // don't filter by row groups
+         //       sortOrder);			     // The sort order
 
         if (cursor != null && cursor.moveToNext()) {
 
            String str ="";
-        //   while (cursor.moveToNext()){ // cursor iterates through all rows
+        //  while (cursor.moveToNext()){ // cursor iterates through all rows
             String[] columns = cursor.getColumnNames();
                for (String column : columns){
                    str += "\t" + cursor.getString(cursor.getColumnIndex(column));
                }
                str += "\n";
-        //   }
+        //    }
            cursor.close();
             Log.i(TAG, str);
         }
@@ -167,19 +186,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String[] selectionArgs = null;
 
         String sortOrder = null;	// Ascending or Descending ...
+        Uri uri = NationEntry.CONTENT_URI;
+        Cursor cursor = getContentResolver().query(uri,projection,selection,selectionArgs,sortOrder);
 
-        Cursor cursor = database.query(NationEntry.TABLE_NAME,		// The table name
-                projection,                 // The columns to return
-                selection,                  // Selection: WHERE clause OR the condition
-                selectionArgs,              // Selection Arguments for the WHERE clause
-                null,                       // don't group the rows
-                null,                       // don't filter by row groups
-                sortOrder);					// The sort order
+       // Cursor cursor = database.query(NationEntry.TABLE_NAME,		// The table name
+        //        projection,                 // The columns to return
+      //          selection,                  // Selection: WHERE clause OR the condition
+       //         selectionArgs,              // Selection Arguments for the WHERE clause
+      //          null,                       // don't group the rows
+      //          null,                       // don't filter by row groups
+      //          sortOrder);					// The sort order
 
         if (cursor != null) {
 
             String str = "";
-            while (cursor.moveToNext()) {	// Cursor iterates through all rows
+           while (cursor.moveToNext()) {	// Cursor iterates through all rows
 
                 String[] columns = cursor.getColumnNames();
                 for (String column : columns) {
@@ -195,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onDestroy() {
-        database.close();	// Close Database Connection
+      //  database.close();	// Close Database Connection
         super.onDestroy();
     }
 }

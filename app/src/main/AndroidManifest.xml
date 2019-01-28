@@ -20,6 +20,8 @@
             android:authorities="com.example.pankajbagariya.contentdemo.Data.NationProvider"
             android:name=".Data.NationProvider"
             android:exported="false"/>
+        <activity android:name=".NationEditActivity"/>
+        <activity android:name=".NationListActivity"/>
     </application>
 
 </manifest>

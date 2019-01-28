@@ -14,6 +14,7 @@ public final class NationContract {
     //Path to CLIENT APP to get our table
     public static final String PATH_COUNTRIES = "countries";
 
+
     public static final class NationEntry implements BaseColumns {
 
         //CONTENT_URI : content://com.example.pankajbagariya.contentdemo..data.NationProvider/countries

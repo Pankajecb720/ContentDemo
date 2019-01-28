@@ -1,6 +1,7 @@
 package com.example.pankajbagariya.contentdemo;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -174,6 +175,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void queryAndDisplayAll() {
+
+        Intent intent = new Intent(this,NationListActivity.class);
+        startActivity(intent);
 
         String[] projection = {
                 NationEntry._ID,
